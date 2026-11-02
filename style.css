@@ -1,0 +1,31 @@
+body
+{background-color:rgb(0, 255, 234);}
+
+h1 {color : rgb(248, 248, 248); position: fixed;
+background-color:rgb(255, 6, 6);}
+p{color: rgb(174, 255, 0);}
+.important {color:rgb(206, 132, 52)}
+
+#xyz{color:beige}
+input[type="text"]
+{color:red }
+input[type="text"]{background-color: aqua}
+p{position : static;}
+
+.box {
+    position: relative;
+    left: 850px;
+    top: 200px;
+    background-color: rgb(251, 255, 0);
+    padding: 40px;
+    width: 150px;
+}
+h2{
+    position: sticky;
+    top: 90;
+
+    background-color: black;
+    color: white;
+    padding: 15px;
+}
+

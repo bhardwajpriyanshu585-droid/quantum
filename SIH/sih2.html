@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mausam+ | Personalized Weather</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            color: white;
+            background:
+                radial-gradient(circle at 10% 20%, #4facfe 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, #7367f0 0%, transparent 30%),
+                linear-gradient(135deg, #071952, #088395, #35a29f);
+
+            overflow-x: hidden;
+        }
+
+
+        /* BACKGROUND CIRCLES */
+
+        .circle {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(3px);
+            opacity: 0.25;
+            z-index: -1;
+        }
+
+        .circle1 {
+            width: 250px;
+            height: 250px;
+            background: #ffffff;
+            top: -80px;
+            left: -80px;
+        }
+
+        .circle2 {
+            width: 350px;
+            height: 350px;
+            background: #7dd3fc;
+            right: -150px;
+            bottom: -100px;
+        }
+
+
+        /* HEADER */
+
+        header {
+            padding: 25px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .logo span {
+            color: #a5f3fc;
+        }
+
+        .tagline {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+
+        /* MAIN */
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+
+        /* PROFILE */
+
+        .profile-box {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 22px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .profile-box h2 {
+            font-size: 19px;
+            margin-bottom: 14px;
+        }
+
+        .profiles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .profile-btn {
+            padding: 10px 17px;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.10);
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .profile-btn:hover,
+        .profile-btn.active {
+            background: white;
+            color: #075985;
+            transform: translateY(-2px);
+        }
+
+
+        /* MAIN WEATHER */
+
+        .weather-main {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+
+        /* WEATHER CARD */
+
+        .weather-card {
+            min-height: 320px;
+            padding: 35px;
+            border-radius: 28px;
+
+            background: rgba(255,255,255,0.13);
+            backdrop-filter: blur(18px);
+
+            border: 1px solid rgba(255,255,255,0.22);
+
+            box-shadow:
+                0 20px 50px rgba(0,0,0,0.18);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weather-card::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 50%;
+            right: -60px;
+            top: -60px;
+        }
+
+        .location {
+            font-size: 17px;
+            opacity: 0.85;
+        }
+
+        .weather-icon {
+            font-size: 85px;
+            margin-top: 15px;
+        }
+
+        .temperature {
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .condition {
+            font-size: 20px;
+            margin-top: 8px;
+        }
+
+        .updated {
+            font-size: 12px;
+            opacity: 0.65;
+            margin-top: 15px;
+        }
+
+
+        /* RIGHT PANEL */
+
+        .summary {
+            background: rgba(255,255,255,0.13);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 28px;
+            padding: 25px;
+        }
+
+        .summary h2 {
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-icon {
+            font-size: 24px;
+        }
+
+        .stat-name {
+            font-size: 14px;
+            opacity: 0.75;
+        }
+
+        .stat-value {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+
+        /* PERSONALIZED SECTION */
+
+        .section-title {
+            margin: 25px 0 15px;
+            font-size: 21px;
+        }
+
+        .personal-card {
+            background: rgba(255,255,255,0.14);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 22px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .personal-card h2 {
+            margin-bottom: 10px;
+        }
+
+        .personal-card p {
+            opacity: 0.85;
+            line-height: 1.6;
+        }
+
+        .recommendation {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,193,7,0.18);
+            border-left: 4px solid #ffd166;
+            border-radius: 10px;
+        }
+
+
+        /* BOTTOM CARDS */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .small-card {
+            padding: 20px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .small-card .big {
+            font-size: 28px;
+            margin: 8px 0;
+        }
+
+        .small-card p {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+
+        /* FOOTER */
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 13px;
+            opacity: 0.65;
+        }
+
+
+        /* MOBILE */
+
+        @media(max-width: 750px) {
+
+            header {
+                padding: 20px;
+            }
+
+            .weather-main {
+                grid-template-columns: 1fr;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .temperature {
+                font-size: 58px;
+            }
+
+            .weather-card {
+                padding: 25px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div>
+            <div class="logo">🌦️ Mausam<span>+</span></div>
+            <div class="tagline">
+                Weather that understands you
+            </div>
+        </div>
+
+        <div>
+            🇮🇳 India
+        </div>
+
+    </header>
+
+
+    <div class="container">
+
+
+        <!-- PROFILE -->
+
+        <div class="profile-box">
+
+            <h2>👤 Personalize your weather experience</h2>
+
+            <div class="profiles">
+
+                <button class="profile-btn active"
+                        onclick="changeProfile('daily', this)">
+                    👨‍🎓 Daily Life
+                </button>
+
+                <button class="profile-btn"
+                        onclick="changeProfile('farmer', this)">
+                    🌾 Farmer
+                </button>
+
+                <button class="profile-btn"
+                        onclick="changeProfile('health', this)">
+                    ❤️ Health
+                </button>
+
+                <button class="profile-btn"
+                        onclick="changeProfile('travel', this)">
+                    🚗 Travel
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- MAIN WEATHER -->
+
+        <div class="weather-main">
+
+
+            <!-- WEATHER -->
+
+            <div class="weather-card">
+
+                <div class="location">
+                    📍 Ghaziabad, Uttar Pradesh
+                </div>
+
+                <div class="weather-icon">
+                    🌤️
+                </div>
+
+                <div class="temperature">
+                    29°
+                </div>
+
+                <div class="condition">
+                    Partly Cloudy
+                </div>
+
+                <div class="updated">
+                    Updated a few minutes ago
+                </div>
+
+            </div>
+
+
+            <!-- SUMMARY -->
+
+            <div class="summary">
+
+                <h2>Today's Weather</h2>
+
+
+                <div class="stat">
+
+                    <div class="stat-left">
+                        <div class="stat-icon">🌧️</div>
+
+                        <div>
+                            <div class="stat-name">
+                                Rain Probability
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-value">
+                        20%
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="stat-left">
+                        <div class="stat-icon">💧</div>
+
+                        <div>
+                            <div class="stat-name">
+                                Humidity
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-value">
+                        72%
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="stat-left">
+                        <div class="stat-icon">💨</div>
+
+                        <div>
+                            <div class="stat-name">
+                                Wind Speed
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-value">
+                        12 km/h
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="stat-left">
+                        <div class="stat-icon">☀️</div>
+
+                        <div>
+                            <div class="stat-name">
+                                UV Index
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-value">
+                        6
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PERSONALIZED -->
+
+        <div class="section-title">
+            ✨ Personalized For You
+        </div>
+
+
+        <div class="personal-card">
+
+            <h2 id="personalTitle">
+                💡 Daily Recommendation
+            </h2>
+
+            <p id="personalText">
+                Today's weather is comfortable, but there is
+                a small chance of rain. Keep an umbrella with
+                you if you're going outside.
+            </p>
+
+            <div class="recommendation" id="recommendation">
+
+                💡 <b>Tip:</b>
+                Check the weather again before leaving.
+
+            </div>
+
+        </div>
+
+
+        <!-- EXTRA INFORMATION -->
+
+        <div class="section-title">
+            📊 More Weather Information
+        </div>
+
+
+        <div class="cards">
+
+            <div class="small-card">
+
+                <div>🌡️ Feels Like</div>
+
+                <div class="big">
+                    31°C
+                </div>
+
+                <p>
+                    Feels slightly warmer
+                </p>
+
+            </div>
+
+
+            <div class="small-card">
+
+                <div>🌅 Sunrise</div>
+
+                <div class="big">
+                    5:58 AM
+                </div>
+
+                <p>
+                    Sunset: 6:42 PM
+                </p>
+
+            </div>
+
+
+            <div class="small-card">
+
+                <div>💦 Air Quality</div>
+
+                <div class="big">
+                    118
+                </div>
+
+                <p>
+                    Moderate
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <footer>
+
+        SIH26076 Prototype · Mausam+
+        <br>
+        Personalized Weather Experience
+
+    </footer>
+
+
+
+    <script>
+
+
+        function changeProfile(type, button) {
+
+
+            // Remove active from all buttons
+
+            let buttons =
+                document.querySelectorAll(".profile-btn");
+
+            buttons.forEach(function(btn) {
+
+                btn.classList.remove("active");
+
+            });
+
+
+            // Add active to clicked button
+
+            button.classList.add("active");
+
+
+            let title =
+                document.getElementById("personalTitle");
+
+            let text =
+                document.getElementById("personalText");
+
+            let recommendation =
+                document.getElementById("recommendation");
+
+
+            if (type === "farmer") {
+
+                title.innerHTML =
+                    "🌾 Farmer Weather Insights";
+
+                text.innerHTML =
+                    "Rain probability is currently 20%. " +
+                    "Weather conditions are suitable for " +
+                    "routine field activities.";
+
+                recommendation.innerHTML =
+                    "🌱 <b>Tip:</b> Check rainfall forecasts " +
+                    "before irrigation or spraying.";
+
+            }
+
+
+            else if (type === "health") {
+
+                title.innerHTML =
+                    "❤️ Health Weather Insights";
+
+                text.innerHTML =
+                    "The UV index is 6 and air quality is " +
+                    "moderate. Consider limiting prolonged " +
+                    "outdoor exposure during peak sunlight.";
+
+                recommendation.innerHTML =
+                    "☀️ <b>Tip:</b> Stay hydrated and consider " +
+                    "sun protection during peak hours.";
+
+            }
+
+
+            else if (type === "travel") {
+
+                title.innerHTML =
+                    "🚗 Travel Weather Insights";
+
+                text.innerHTML =
+                    "There is a 20% chance of rain today. " +
+                    "Current wind conditions are relatively calm.";
+
+                recommendation.innerHTML =
+                    "🛣️ <b>Tip:</b> Check the weather again " +
+                    "before starting your journey.";
+
+            }
+
+
+            else {
+
+                title.innerHTML =
+                    "💡 Daily Recommendation";
+
+                text.innerHTML =
+                    "Today's weather is comfortable, but " +
+                    "there is a small chance of rain. " +
+                    "Keep an umbrella with you if you're " +
+                    "going outside.";
+
+                recommendation.innerHTML =
+                    "💡 <b>Tip:</b> Check the weather again " +
+                    "before leaving.";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
+```

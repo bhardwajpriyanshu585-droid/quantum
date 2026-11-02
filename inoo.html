@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMARTGAON - Dual Portal Rural Governance & Transparency System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            citizen: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+            },
+            admin: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .fade-in { animation: fadeIn 0.25s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- TOP UTILITY BAR (ALWAYS VISIBLE) -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- LOGO & PORTAL IDENTITY -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goToLanding()">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white font-black text-xl shadow-lg">
+          SG
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-black tracking-wider text-lg bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">SMARTGAON</span>
+            <span id="headerBadge" class="text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
+              Gateway
+            </span>
+          </div>
+          <p class="text-[10px] text-slate-400 leading-none" id="subHeaderTitle">Innotech Smart Village Governance Platform</p>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE CONTROLS: LANGUAGE & LOGOUT / PORTAL SWITCH -->
+      <div class="flex items-center space-x-3">
+        <!-- Language Switcher -->
+        <button onclick="toggleLanguage()" class="flex items-center space-x-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-lg border border-slate-700 transition">
+          <i class="fa-solid fa-language text-emerald-400 text-sm"></i>
+          <span id="langText">English / हिन्दी</span>
+        </button>
+
+        <!-- Active User Badge & Logout -->
+        <div id="activeUserControls" class="hidden flex items-center space-x-2 pl-2 border-l border-slate-800">
+          <div class="hidden sm:block text-right">
+            <p id="navUserName" class="text-xs font-bold text-slate-100 leading-tight">User Name</p>
+            <p id="navUserRole" class="text-[10px] font-medium text-emerald-400 leading-tight">Role</p>
+          </div>
+          <button onclick="logout()" class="flex items-center space-x-1.5 text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg transition shadow-sm">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span data-i18n="switchPortal">Switch Portal / Logout</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-grow flex flex-col justify-center">
+
+    <!-- ========================================================================= -->
+    <!-- 1. LANDING & PORTAL SELECTION SCREEN (SHOWN BY DEFAULT) -->
+    <!-- ========================================================================= -->
+    <div id="landingScreen" class="fade-in max-w-6xl mx-auto px-4 py-10 w-full">
+      
+      <!-- HERO HEADING -->
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full uppercase tracking-widest mb-3 border border-emerald-200">
+          <i class="fa-solid fa-shield-halved mr-1"></i> Role-Based Access Control
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+          Welcome to <span class="text-emerald-600">SMARTGAON</span> Portal
+        </h1>
+        <p class="text-slate-600 text-base sm:text-lg mt-3" data-i18n="portalSubtitle">
+          Please select your entry gateway below to access dedicated citizen services or administrative management tools.
+        </p>
+      </div>
+
+      <!-- PORTAL CARDS GRID -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        
+        <!-- CARD 1: CITIZEN PORTAL -->
+        <div class="bg-white rounded-2xl border-2 border-emerald-500/30 hover:border-emerald-500 shadow-xl hover:shadow-2xl transition duration-300 overflow-hidden flex flex-col group">
+          <div class="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 text-white relative">
+            <div class="absolute right-4 top-4 text-emerald-200/20 text-7xl font-black group-hover:scale-110 transition duration-300">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <span class="bg-emerald-900/40 text-emerald-200 text-xs font-bold px-3 py-1 rounded-full border border-emerald-400/30 uppercase tracking-wide">
+              Public Portal
+            </span>
+            <h2 class="text-2xl font-black mt-2">VILLAGER / CITIZEN</h2>
+            <p class="text-emerald-100 text-xs mt-1">For Village Residents, Farmers & Local Community Members</p>
+          </div>
+
+          <div class="p-6 flex-grow flex flex-col justify-between bg-slate-50/50">
+            <ul class="space-y-3 mb-8 text-sm text-slate-700">
+              <li class="flex items-start space-x-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-600 mt-1"></i>
+                <span>Report village infrastructure complaints (Potholes, Water, Electricity) with photo & GPS.</span>
+              </li>
+              <li class="flex items-start space-x-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-600 mt-1"></i>
+                <span class="font-semibold text-slate-900">View ONLY your personal submitted complaints & real-time progress.</span>
+              </li>
+              <li class="flex items-start space-x-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-600 mt-1"></i>
+                <span>Inspect Gram Panchayat funds, project budgets & public bills/invoices.</span>
+              </li>
+              <li class="flex items-start space-x-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-600 mt-1"></i>
+                <span>File anonymous corruption/misconduct grievances directly to high authorities.</span>
+              </li>
+            </ul>
+
+            <div class="space-y-3">
+              <button onclick="loginAs('citizen')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-emerald-500/25 transition flex items-center justify-center space-x-2 group-hover:translate-x-0.5">
+                <i class="fa-solid fa-user-check"></i>
+                <span>Enter as Villager (Demo Login)</span>
+                <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+              </button>
+              <button onclick="openModal('citizenAuthModal')" class="w-full bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2.5 px-4 rounded-xl border border-slate-300 transition text-xs flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-key text-slate-400"></i>
+                <span>Custom Login or Register Account</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2: ADMIN / OFFICER PORTAL -->
+        <div class="bg-white rounded-2xl border-2 border-slate-700/30 hover:border-slate-800 shadow-xl hover:shadow-2xl transition duration-300 overflow-hidden flex flex-col group">
+          <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 text-white relative">
+            <div class="absolute right-4 top-4 text-slate-700/30 text-7xl font-black group-hover:scale-110 transition duration-300">
+              <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <span class="bg-slate-800 text-slate-300 text-xs font-bold px-3 py-1 rounded-full border border-slate-700 uppercase tracking-wide">
+              Official Portal
+            </span>
+            <h2 class="text-2xl font-black mt-2">GOVERNMENT OFFICER / ADMIN</h2>
+            <p class="text-slate-300 text-xs mt-1">For BDO, Gram Pradhan, Engineers & District Admin</p>
+          </div>
+
+          <div class="p-6 flex-grow flex flex-col justify-between bg-slate-50/50">
+            <ul class="space-y-3 mb-8 text-sm text-slate-700">
+              <li class="flex items-start space-x-2.5">
+                <i class="fa-solid fa-circle-check text-slate-800 mt-1"></i>
+                <span class="font-semibold text-slate-900">Manage all village public complaints & update resolution statuses.</span>
+              </li>
+              <li class="flex items-start space-x-2.5">
+                <i class="fa-solid fa-circle-check text-slate-800 mt-1"></i>
+                <span>Upload official resolution proof photos and mark SLA completion.</span>
+              </li>
+              <li class="flex items-start space-x-2.5">
+                <i class="fa-solid fa-circle-check text-slate-800 mt-1"></i>
+                <span>Access District Officer Directory, assigned blocks, and SLA delay audit flags.</span>
+              </li>
+              <li class="flex items-start space-x-2.5">
+                <i class="fa-solid fa-circle-check text-slate-800 mt-1"></i>
+                <span>Add & publish Gram Panchayat development vouchers, fund allocations & bills.</span>
+              </li>
+            </ul>
+
+            <div class="space-y-3">
+              <button onclick="loginAs('admin')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-slate-900/25 transition flex items-center justify-center space-x-2 group-hover:translate-x-0.5">
+                <i class="fa-solid fa-shield-cat"></i>
+                <span>Enter as Officer / Admin (Demo Login)</span>
+                <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+              </button>
+              <button onclick="openModal('adminAuthModal')" class="w-full bg-white hover:bg-slate-100 text-slate-700 font-semibold py-2.5 px-4 rounded-xl border border-slate-300 transition text-xs flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-id-card text-slate-400"></i>
+                <span>Official Officer Sign-In / Register</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PLATFORM FOOTER NOTE -->
+      <div class="mt-12 text-center text-xs text-slate-500 flex items-center justify-center space-x-4">
+        <span><i class="fa-solid fa-lock text-emerald-600 mr-1"></i> Encrypted 256-bit Session</span>
+        <span>•</span>
+        <span><i class="fa-solid fa-building-columns text-slate-600 mr-1"></i> Gram Panchayat Govt System</span>
+        <span>•</span>
+        <span><i class="fa-solid fa-check-double text-teal-600 mr-1"></i> Strict Data Privacy</span>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. VILLAGER / CITIZEN DASHBOARD (ONLY VISIBLE WHEN LOGGED IN AS CITIZEN) -->
+    <!-- ========================================================================= -->
+    <div id="citizenApp" class="hidden fade-in min-h-[calc(100vh-4rem)] flex flex-col bg-slate-50">
+      
+      <!-- CITIZEN TOP NAVIGATION DECK -->
+      <div class="bg-emerald-800 text-white shadow-inner border-b border-emerald-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between py-3 gap-3">
+          
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-600 border-2 border-emerald-300 flex items-center justify-center text-white font-bold text-lg">
+              <i class="fa-solid fa-user text-sm"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="font-extrabold text-base tracking-wide text-white">CITIZEN DASHBOARD</h2>
+                <span class="bg-emerald-500/40 text-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-400/30">CITIZEN PORTAL</span>
+              </div>
+              <p class="text-xs text-emerald-200">Welcome, <span id="citizenNameDisplay" class="font-semibold text-white">Ramesh Kumar</span> (Aadhaar ID: ********8912)</p>
+            </div>
+          </div>
+
+          <!-- CITIZEN TABS -->
+          <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto max-w-full pb-1 md:pb-0 custom-scrollbar text-xs">
+            <button onclick="switchCitizenTab('myComplaints')" id="citTab-myComplaints" class="cit-tab-btn bg-white text-emerald-900 font-bold px-3.5 py-2 rounded-lg shadow-sm flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-list-check"></i>
+              <span>My Complaints (<span id="userComplaintCount">2</span>)</span>
+            </button>
+            <button onclick="switchCitizenTab('fileComplaint')" id="citTab-fileComplaint" class="cit-tab-btn text-emerald-100 hover:bg-emerald-700/60 font-medium px-3.5 py-2 rounded-lg transition flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-circle-plus"></i>
+              <span>Report Issue</span>
+            </button>
+            <button onclick="switchCitizenTab('fundsView')" id="citTab-fundsView" class="cit-tab-btn text-emerald-100 hover:bg-emerald-700/60 font-medium px-3.5 py-2 rounded-lg transition flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+              <span>Village Funds & Bills</span>
+            </button>
+            <button onclick="switchCitizenTab('grievanceForm')" id="citTab-grievanceForm" class="cit-tab-btn text-emerald-100 hover:bg-emerald-700/60 font-medium px-3.5 py-2 rounded-lg transition flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-triangle-exclamation text-amber-300"></i>
+              <span>Report Corruption</span>
+            </button>
+          </nav>
+
+        </div>
+      </div>
+
+      <!-- CITIZEN CONTENT AREA -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        
+        <!-- CITIZEN VIEW 1: MY COMPLAINTS ONLY -->
+        <div id="citView-myComplaints" class="cit-view space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+            <div>
+              <h3 class="text-xl font-black text-slate-900">My Submitted Complaints</h3>
+              <p class="text-xs text-slate-500 mt-1">Below are complaints filed strictly under your account. Global officer directory & internal admin tools are hidden for privacy.</p>
+            </div>
+            <button onclick="switchCitizenTab('fileComplaint')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition flex items-center space-x-2 self-start sm:self-auto">
+              <i class="fa-solid fa-plus"></i>
+              <span>File New Issue</span>
+            </button>
+          </div>
+
+          <!-- COMPLAINT CARDS CONTAINER -->
+          <div id="myComplaintsList" class="grid grid-cols-1 gap-6">
+            <!-- Dynamic Content Injected via JS -->
+          </div>
+        </div>
+
+        <!-- CITIZEN VIEW 2: REPORT NEW ISSUE -->
+        <div id="citView-fileComplaint" class="cit-view hidden max-w-3xl mx-auto">
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+            <div class="bg-emerald-700 p-6 text-white">
+              <h3 class="text-xl font-black">Report Infrastructure / Public Problem</h3>
+              <p class="text-xs text-emerald-100 mt-1">Submit issues with roads, water, sanitation, streetlights, or public utilities in your Gram Panchayat.</p>
+            </div>
+
+            <form onsubmit="handleCitizenComplaintSubmit(event)" class="p-6 space-y-5">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Issue Category *</label>
+                  <select id="issueCategory" required class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500">
+                    <option value="">Select Category</option>
+                    <option value="Roads & Potholes">Roads & Potholes (सड़क व खड्डे)</option>
+                    <option value="Water Supply & Pipeline">Water Supply & Pipeline (जल आपूर्ति)</option>
+                    <option value="Streetlights & Power">Streetlights & Power (बिजली व स्ट्रीटलाइट)</option>
+                    <option value="Sanitation & Garbage">Sanitation & Drainage (सफाई व नाली)</option>
+                    <option value="School / Health Center">School / Health Center Infrastructure</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Location / Landmark *</label>
+                  <input type="text" id="issueLocation" required placeholder="e.g. Near Main Market Handpump, Ward 4" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Detailed Description *</label>
+                <textarea id="issueDesc" rows="4" required placeholder="Describe the problem clearly..." class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500"></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Attach Photo (Optional)</label>
+                  <input type="file" id="issuePhoto" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-slate-200 rounded-lg">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">GPS Geotag</label>
+                  <button type="button" onclick="autoGeotag()" id="geoBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold p-2.5 rounded-lg border border-slate-300 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-location-crosshairs text-emerald-600"></i>
+                    <span id="geoBtnText">Auto-Detect GPS Location</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-slate-100 flex justify-end space-x-3">
+                <button type="button" onclick="switchCitizenTab('myComplaints')" class="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-600 hover:bg-slate-100">Cancel</button>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-lg shadow-emerald-600/20">Submit Complaint</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- CITIZEN VIEW 3: VILLAGE FUNDS & BILLS DISCLOSURE -->
+        <div id="citView-fundsView" class="cit-view hidden space-y-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">15th Finance Commission Transparency</span>
+              <h3 class="text-xl font-black text-slate-900 mt-1">Gram Panchayat Financial Ledger</h3>
+              <p class="text-xs text-slate-500">Public expenditure records and bill transparency for Gram Panchayat Muradnagar Rural.</p>
+            </div>
+            <div class="flex items-center space-x-4 bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+              <div>
+                <p class="text-[10px] uppercase font-bold text-emerald-700">Total Funds Received</p>
+                <p class="text-lg font-black text-emerald-900">₹ 24,50,000</p>
+              </div>
+              <div class="w-px h-8 bg-emerald-200"></div>
+              <div>
+                <p class="text-[10px] uppercase font-bold text-slate-600">Spent / Allocated</p>
+                <p class="text-lg font-black text-slate-800">₹ 18,20,000</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- BILLS TABLE -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 font-bold text-slate-800 text-sm flex justify-between items-center">
+              <span>Published Public Bills & Work Vouchers</span>
+              <span class="text-xs font-normal text-slate-500">Updated weekly by Panchayat Secretary</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200">
+                  <tr>
+                    <th class="px-6 py-3">Voucher #</th>
+                    <th class="px-6 py-3">Project / Work Description</th>
+                    <th class="px-6 py-3">Contractor / Vendor</th>
+                    <th class="px-6 py-3">Amount</th>
+                    <th class="px-6 py-3">Date</th>
+                    <th class="px-6 py-3">Public Bill Proof</th>
+                  </tr>
+                </thead>
+                <tbody id="publicFundsTable" class="divide-y divide-slate-100">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CITIZEN VIEW 4: REPORT MISCONDUCT / CORRUPTION -->
+        <div id="citView-grievanceForm" class="cit-view hidden max-w-2xl mx-auto">
+          <div class="bg-white rounded-2xl border border-rose-200 shadow-xl overflow-hidden">
+            <div class="bg-gradient-to-r from-rose-700 to-amber-700 p-6 text-white">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-shield-cat text-2xl"></i>
+                <h3 class="text-xl font-black">Report Officer Misconduct or Corruption</h3>
+              </div>
+              <p class="text-xs text-rose-100 mt-1">Encrypted, confidential reporting against Gram Pradhan, Block Officers, or Engineers demanding bribes or delaying public works.</p>
+            </div>
+
+            <form onsubmit="handleGrievanceSubmit(event)" class="p-6 space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Target Official / Department *</label>
+                <select required class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+                  <option value="">Select Officer Category</option>
+                  <option value="Gram Pradhan / Panchayat Representative">Gram Pradhan / Panchayat Representative</option>
+                  <option value="Block Development Officer (BDO)">Block Development Officer (BDO)</option>
+                  <option value="Panchayat Secretary">Panchayat Secretary</option>
+                  <option value="Junior Engineer (JE)">Junior Engineer (JE) Public Works</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nature of Complaint *</label>
+                <input type="text" required placeholder="e.g., Demanding bribe for PM Awas Yojana approval" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Detailed Incident Narrative & Evidence Details *</label>
+                <textarea rows="4" required placeholder="Provide facts, dates, location, and witness names if available..." class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5"></textarea>
+              </div>
+
+              <div class="flex items-center space-x-2 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                <input type="checkbox" id="anonCheck" class="rounded text-rose-600 focus:ring-rose-500">
+                <label for="anonCheck" class="text-xs font-medium text-amber-900">Submit anonymously (Hide my Aadhaar & Phone details from District Vigilance Committee)</label>
+              </div>
+
+              <div class="pt-3 border-t border-slate-100 flex justify-end">
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-lg shadow-rose-700/20">
+                  <i class="fa-solid fa-paper-plane mr-1"></i> Submit Vigilance Grievance
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 3. GOVERNMENT OFFICER & ADMIN COMMAND CENTER (ONLY VISIBLE WHEN LOGGED IN AS ADMIN) -->
+    <!-- ========================================================================= -->
+    <div id="adminApp" class="hidden fade-in min-h-[calc(100vh-4rem)] flex flex-col bg-slate-100">
+      
+      <!-- ADMIN TOP NAVIGATION DECK -->
+      <div class="bg-slate-900 text-white shadow-lg border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between py-3 gap-3">
+          
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-sky-600 flex items-center justify-center text-white font-black text-lg shadow-md">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 class="font-black text-base tracking-wide text-white">GOVERNMENT OFFICER COMMAND CENTER</h2>
+                <span class="bg-sky-500/20 text-sky-300 text-[10px] font-bold px-2 py-0.5 rounded border border-sky-400/30">ADMIN PORTAL</span>
+              </div>
+              <p class="text-xs text-slate-300">Logged in as: <span id="adminNameDisplay" class="font-bold text-sky-400">Dr. Vikram Singh</span> (BDO - Block Muradnagar, ID: GOVT-98421)</p>
+            </div>
+          </div>
+
+          <!-- ADMIN TABS -->
+          <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto max-w-full pb-1 md:pb-0 custom-scrollbar text-xs">
+            <button onclick="switchAdminTab('allComplaints')" id="admTab-allComplaints" class="adm-tab-btn bg-sky-500 text-white font-bold px-3.5 py-2 rounded-lg shadow-sm flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-tasks"></i>
+              <span>All Public Complaints (<span id="adminTotalCount">3</span>)</span>
+            </button>
+            <button onclick="switchAdminTab('officerRoster')" id="admTab-officerRoster" class="adm-tab-btn text-slate-300 hover:bg-slate-800 font-medium px-3.5 py-2 rounded-lg transition flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-address-book"></i>
+              <span>Officer Roster & SLA Audit</span>
+            </button>
+            <button onclick="switchAdminTab('ledgerManager')" id="admTab-ledgerManager" class="adm-tab-btn text-slate-300 hover:bg-slate-800 font-medium px-3.5 py-2 rounded-lg transition flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+              <span>Financial Ledger Manager</span>
+            </button>
+            <button onclick="switchAdminTab('reviewGrievances')" id="admTab-reviewGrievances" class="adm-tab-btn text-slate-300 hover:bg-slate-800 font-medium px-3.5 py-2 rounded-lg transition flex items-center space-x-1.5 whitespace-nowrap">
+              <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+              <span>Corruption Grievances (<span id="grievanceBadgeCount">1</span>)</span>
+            </button>
+          </nav>
+
+        </div>
+      </div>
+
+      <!-- ADMIN CONTENT AREA -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        
+        <!-- ADMIN VIEW 1: GLOBAL COMPLAINTS CONTROL PANEL -->
+        <div id="admView-allComplaints" class="adm-view space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-sm gap-4">
+            <div>
+              <h3 class="text-xl font-black text-slate-900">Gram Panchayat Infrastructure Complaints Master</h3>
+              <p class="text-xs text-slate-500">Monitor citizen reports, assign local department engineers, and update resolution lifecycle status.</p>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="flex items-center space-x-2 text-xs">
+              <span class="font-bold text-slate-600">Filter Status:</span>
+              <select onchange="filterAdminComplaints(this.value)" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-semibold text-slate-700">
+                <option value="ALL">All Complaints</option>
+                <option value="Pending">Pending Action</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ADMIN COMPLAINTS TABLE / CARDS -->
+          <div id="adminComplaintsContainer" class="space-y-4">
+            <!-- Dynamic Injected via JS -->
+          </div>
+        </div>
+
+        <!-- ADMIN VIEW 2: OFFICER ROSTER & SLA AUDIT DIRECTORY -->
+        <div id="admView-officerRoster" class="adm-view hidden space-y-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h3 class="text-xl font-black text-slate-900">District & Block Officer Directory</h3>
+              <p class="text-xs text-slate-500">Assigned government engineers, field officers, and automatic SLA delay oversight flags.</p>
+            </div>
+            <button onclick="alert('Feature: New Officer Registration requires District Magistrate Key Validation.')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow">
+              <i class="fa-solid fa-plus mr-1"></i> Add Official Entry
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-800 text-slate-200 font-bold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th class="px-6 py-3.5">Officer Name & ID</th>
+                    <th class="px-6 py-3.5">Designation & Dept</th>
+                    <th class="px-6 py-3.5">Assigned Sector / Ward</th>
+                    <th class="px-6 py-3.5">Contact Details</th>
+                    <th class="px-6 py-3.5">SLA SLA Delay Audit Flag</th>
+                    <th class="px-6 py-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-medium">
+                  <tr>
+                    <td class="px-6 py-4">
+                      <p class="font-bold text-slate-900">Er. Rajesh Verma</p>
+                      <p class="text-[10px] text-slate-400">ID: PWD-UP-8821</p>
+                    </td>
+                    <td class="px-6 py-4">Junior Engineer (Roads)</td>
+                    <td class="px-6 py-4">Sector A & B (Muradnagar)</td>
+                    <td class="px-6 py-4"><i class="fa-solid fa-phone mr-1 text-slate-400"></i> +91 98712 34567</td>
+                    <td class="px-6 py-4">
+                      <span class="bg-emerald-100 text-emerald-800 font-bold text-[10px] px-2.5 py-1 rounded-full">
+                        <i class="fa-solid fa-check-circle mr-1"></i> Clear (0 Overdue)
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <button onclick="alert('Viewing Engineer Performance File...')" class="text-sky-600 hover:text-sky-800 font-bold">Audit Report</button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="px-6 py-4">
+                      <p class="font-bold text-slate-900">Suresh Chand Sharma</p>
+                      <p class="text-[10px] text-slate-400">ID: JAL-NIGAM-402</p>
+                    </td>
+                    <td class="px-6 py-4">Assistant Officer (Jal Nigam)</td>
+                    <td class="px-6 py-4">Ward 3 & 4 (Pipeline)</td>
+                    <td class="px-6 py-4"><i class="fa-solid fa-phone mr-1 text-slate-400"></i> +91 94110 88219</td>
+                    <td class="px-6 py-4">
+                      <span class="bg-rose-100 text-rose-800 font-bold text-[10px] px-2.5 py-1 rounded-full animate-pulse">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> RED FLAG (2 Overdue > 7 days)
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <button onclick="alert('SLA Warning Memo dispatched to Officer Suresh Chand.')" class="text-rose-600 hover:text-rose-800 font-bold">Send Warning Memo</button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="px-6 py-4">
+                      <p class="font-bold text-slate-900">Anil Kumar Tyagi</p>
+                      <p class="text-[10px] text-slate-400">ID: ELEC-DEPT-991</p>
+                    </td>
+                    <td class="px-6 py-4">Lineman Supervisor (Electricity Board)</td>
+                    <td class="px-6 py-4">Entire Gram Panchayat</td>
+                    <td class="px-6 py-4"><i class="fa-solid fa-phone mr-1 text-slate-400"></i> +91 98370 12099</td>
+                    <td class="px-6 py-4">
+                      <span class="bg-emerald-100 text-emerald-800 font-bold text-[10px] px-2.5 py-1 rounded-full">
+                        <i class="fa-solid fa-check-circle mr-1"></i> Clear (0 Overdue)
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <button onclick="alert('Viewing Engineer Performance File...')" class="text-sky-600 hover:text-sky-800 font-bold">Audit Report</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN VIEW 3: FINANCIAL LEDGER MANAGER -->
+        <div id="admView-ledgerManager" class="adm-view hidden space-y-6">
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h3 class="text-xl font-black text-slate-900">Gram Panchayat Fund & Voucher Publisher</h3>
+              <p class="text-xs text-slate-500">Publish development bills to the citizen ledger to maintain strict public transparency.</p>
+            </div>
+            <button onclick="openModal('addVoucherModal')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow transition">
+              <i class="fa-solid fa-plus-circle mr-1"></i> Publish New Work Voucher / Bill
+            </button>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h4 class="font-bold text-sm text-slate-800 mb-4">Active Fund Allocations</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <p class="text-xs font-semibold text-slate-500">15th FC Tied Grant (Sanitation)</p>
+                <p class="text-xl font-black text-slate-800 mt-1">₹ 10,00,000</p>
+                <div class="w-full bg-slate-200 h-2 rounded-full mt-3 overflow-hidden">
+                  <div class="bg-emerald-500 h-full w-3/4"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">75% Utilized</p>
+              </div>
+
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <p class="text-xs font-semibold text-slate-500">Road Infrastructure Grant</p>
+                <p class="text-xl font-black text-slate-800 mt-1">₹ 8,50,000</p>
+                <div class="w-full bg-slate-200 h-2 rounded-full mt-3 overflow-hidden">
+                  <div class="bg-sky-500 h-full w-1/2"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">50% Utilized</p>
+              </div>
+
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <p class="text-xs font-semibold text-slate-500">Solar & Streetlight Corpus</p>
+                <p class="text-xl font-black text-slate-800 mt-1">₹ 6,00,000</p>
+                <div class="w-full bg-slate-200 h-2 rounded-full mt-3 overflow-hidden">
+                  <div class="bg-amber-500 h-full w-1/3"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">33% Utilized</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADMIN VIEW 4: CORRUPTION GRIEVANCES REVIEW -->
+        <div id="admView-reviewGrievances" class="adm-view hidden space-y-6">
+          <div class="bg-white p-6 rounded-2xl border border-rose-200 shadow-sm">
+            <div class="flex items-center space-x-3 text-rose-800">
+              <i class="fa-solid fa-user-secret text-2xl"></i>
+              <div>
+                <h3 class="text-xl font-black">Confidential Corruption Grievances File</h3>
+                <p class="text-xs text-slate-500">Review allegations filed by villagers. High-severity items are auto-forwarded to District Vigilance Officer.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <div class="border-l-4 border-rose-500 bg-rose-50/50 p-4 rounded-r-xl space-y-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="bg-rose-100 text-rose-800 font-bold text-[10px] px-2 py-0.5 rounded">CONFIDENTIAL</span>
+                  <h4 class="font-bold text-slate-900 text-sm mt-1">Target Official: Panchayat Executive Assistant</h4>
+                </div>
+                <span class="text-xs text-slate-400 font-semibold">12 Oct 2026</span>
+              </div>
+              <p class="text-xs text-slate-700"><strong>Allegation:</strong> Demanded ₹ 2,000 cash bribe for releasing NREGA job card payment voucher.</p>
+              <div class="pt-2 flex items-center justify-between text-xs border-t border-rose-100">
+                <span class="text-slate-500">Source: Anonymous Citizen Submission</span>
+                <button onclick="alert('Inquiry Case File #VIG-901 opened and forwarded to District Inquiry Cell.')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs">
+                  Initiate Official Inquiry
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODALS -->
+  <!-- ========================================================================= -->
+
+  <!-- CITIZEN AUTH MODAL -->
+  <div id="citizenAuthModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden fade-in">
+      <div class="bg-emerald-700 p-5 text-white flex justify-between items-center">
+        <h3 class="font-black text-lg">Citizen Login / Registration</h3>
+        <button onclick="closeModal('citizenAuthModal')" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="handleCustomLogin(event, 'citizen')" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Mobile Number or Aadhaar ID</label>
+          <input type="text" id="citizenIdInput" required placeholder="e.g., 9876543210" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Your Full Name</label>
+          <input type="text" id="citizenNameInput" required placeholder="e.g., Ramesh Kumar" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+        </div>
+        <div class="pt-2">
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow">
+            Enter Citizen Dashboard
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN AUTH MODAL -->
+  <div id="adminAuthModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden fade-in">
+      <div class="bg-slate-900 p-5 text-white flex justify-between items-center">
+        <h3 class="font-black text-lg">Officer / Admin Authentication</h3>
+        <button onclick="closeModal('adminAuthModal')" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="handleCustomLogin(event, 'admin')" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Government ID / Service Number</label>
+          <input type="text" id="adminIdInput" required placeholder="e.g., GOVT-98421" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Officer Name & Designation</label>
+          <input type="text" id="adminNameInput" required placeholder="e.g., Dr. Vikram Singh (BDO)" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+        </div>
+        <div class="pt-2">
+          <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl shadow">
+            Authenticate & Access Command Center
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD VOUCHER MODAL (ADMIN) -->
+  <div id="addVoucherModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden fade-in">
+      <div class="bg-slate-900 p-5 text-white flex justify-between items-center">
+        <h3 class="font-black text-lg">Publish Development Work Voucher</h3>
+        <button onclick="closeModal('addVoucherModal')" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="handleAddVoucher(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Voucher Number *</label>
+          <input type="text" id="vouchNum" required placeholder="e.g., VOUCH-2026-882" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Work Description *</label>
+          <input type="text" id="vouchDesc" required placeholder="e.g., Solar Light Installation in Ward 2" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Vendor / Firm *</label>
+            <input type="text" id="vouchVendor" required placeholder="e.g., Surya Electricals" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Amount (₹) *</label>
+            <input type="number" id="vouchAmount" required placeholder="e.g., 85000" class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5">
+          </div>
+        </div>
+        <div class="pt-2 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('addVoucherModal')" class="px-4 py-2 border rounded-xl text-xs font-bold text-slate-600">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow">Publish Voucher</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT STATE & ROLE CONTROLLER -->
+  <!-- ========================================================================= -->
+  <script>
+    // INITIAL APP STATE & DEMO DATA
+    const state = {
+      currentUser: null, // null | { role: 'citizen'|'admin', id: string, name: string }
+      language: 'en',
+      
+      // PUBLIC COMPLAINTS MASTER STORE
+      complaints: [
+        {
+          id: 'CMP-2026-101',
+          citizenId: 'CIT-8912',
+          citizenName: 'Ramesh Kumar',
+          category: 'Roads & Potholes',
+          location: 'Main Bus Stand Approach Road, Ward 2',
+          desc: 'Large pothole causing multiple vehicle slips during rains. Dangerous for school children.',
+          status: 'In Progress', // Pending, In Progress, Resolved
+          assignedOfficer: 'Er. Rajesh Verma (PWD)',
+          date: '10 Oct 2026',
+          photo: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80',
+          timeline: [
+            { title: 'Complaint Registered', date: '10 Oct 2026', done: true },
+            { title: 'Assigned to Er. Rajesh Verma', date: '11 Oct 2026', done: true },
+            { title: 'Road Repair & Tarring', date: 'In Progress', done: false }
+          ]
+        },
+        {
+          id: 'CMP-2026-102',
+          citizenId: 'CIT-8912',
+          citizenName: 'Ramesh Kumar',
+          category: 'Water Supply & Pipeline',
+          location: 'East Colony Public Handpump',
+          desc: 'Water supply contaminated with silt for the past 3 days. Clean drinking water pipeline broken.',
+          status: 'Pending',
+          assignedOfficer: 'Suresh Chand Sharma (Jal Nigam)',
+          date: '14 Oct 2026',
+          photo: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=600&q=80',
+          timeline: [
+            { title: 'Complaint Registered', date: '14 Oct 2026', done: true },
+            { title: 'Pending Officer Review', date: 'Pending', done: false }
+          ]
+        },
+        {
+          id: 'CMP-2026-103',
+          citizenId: 'CIT-4401', // Different citizen (Not Ramesh Kumar)
+          citizenName: 'Sita Devi',
+          category: 'Streetlights & Power',
+          location: 'Panchayat Bhavan Road',
+          desc: '3 solar streetlights non-functional for past 2 weeks.',
+          status: 'Resolved',
+          assignedOfficer: 'Anil Kumar Tyagi',
+          date: '02 Oct 2026',
+          photo: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=600&q=80',
+          timeline: [
+            { title: 'Complaint Registered', date: '02 Oct 2026', done: true },
+            { title: 'Assigned to Electricity Board', date: '03 Oct 2026', done: true },
+            { title: 'Bulbs & Battery Replaced', date: '05 Oct 2026', done: true }
+          ]
+        }
+      ],
+
+      // PUBLIC VOUCHERS LEDGER
+      vouchers: [
+        { num: 'VOUCH-2026-001', desc: 'Concrete Pavement Repair (Ward 1)', vendor: 'Shiv Shakti Constructions', amount: '₹ 2,40,000', date: '01 Oct 2026' },
+        { num: 'VOUCH-2026-002', desc: 'Solar Pump Battery Replacements', vendor: 'Surya Power Ltd', amount: '₹ 1,15,000', date: '08 Oct 2026' },
+        { num: 'VOUCH-2026-003', desc: 'Sanitation Drain Cleaning Work', vendor: 'Gram Swachhta Committee', amount: '₹ 65,000', date: '12 Oct 2026' }
+      ]
+    };
+
+    // ON PAGE LOAD
+    window.onload = function() {
+      renderPublicFundsTable();
+    };
+
+    // NAVIGATION CONTROLLER
+    function goToLanding() {
+      state.currentUser = null;
+      document.getElementById('landingScreen').classList.remove('hidden');
+      document.getElementById('citizenApp').classList.add('hidden');
+      document.getElementById('adminApp').classList.add('hidden');
+      document.getElementById('activeUserControls').classList.add('hidden');
+      
+      // Reset Header Badge
+      document.getElementById('headerBadge').innerText = 'Gateway';
+      document.getElementById('headerBadge').className = 'text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700';
+    }
+
+    // LOGIN DISPATCHER
+    function loginAs(role) {
+      if (role === 'citizen') {
+        state.currentUser = {
+          role: 'citizen',
+          id: 'CIT-8912',
+          name: 'Ramesh Kumar'
+        };
+        showCitizenInterface();
+      } else if (role === 'admin') {
+        state.currentUser = {
+          role: 'admin',
+          id: 'GOVT-98421',
+          name: 'Dr. Vikram Singh (BDO)'
+        };
+        showAdminInterface();
+      }
+    }
+
+    function handleCustomLogin(e, role) {
+      e.preventDefault();
+      if (role === 'citizen') {
+        const name = document.getElementById('citizenNameInput').value || 'Citizen User';
+        const id = document.getElementById('citizenIdInput').value || 'CIT-USER';
+        state.currentUser = { role: 'citizen', id, name };
+        closeModal('citizenAuthModal');
+        showCitizenInterface();
+      } else {
+        const name = document.getElementById('adminNameInput').value || 'Officer User';
+        const id = document.getElementById('adminIdInput').value || 'GOVT-OFFICER';
+        state.currentUser = { role: 'admin', id, name };
+        closeModal('adminAuthModal');
+        showAdminInterface();
+      }
+    }
+
+    function logout() {
+      goToLanding();
+    }
+
+    // SHOW CITIZEN PORTAL
+    function showCitizenInterface() {
+      document.getElementById('landingScreen').classList.add('hidden');
+      document.getElementById('adminApp').classList.add('hidden');
+      document.getElementById('citizenApp').classList.remove('hidden');
+      document.getElementById('activeUserControls').classList.remove('hidden');
+
+      // Update Header Text
+      document.getElementById('navUserName').innerText = state.currentUser.name;
+      document.getElementById('navUserRole').innerText = 'Villager Portal';
+      document.getElementById('citizenNameDisplay').innerText = state.currentUser.name;
+
+      document.getElementById('headerBadge').innerText = 'CITIZEN PORTAL';
+      document.getElementById('headerBadge').className = 'text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-emerald-600 text-white shadow-sm';
+
+      switchCitizenTab('myComplaints');
+      renderCitizenComplaints();
+    }
+
+    // SHOW ADMIN PORTAL
+    function showAdminInterface() {
+      document.getElementById('landingScreen').classList.add('hidden');
+      document.getElementById('citizenApp').classList.add('hidden');
+      document.getElementById('adminApp').classList.remove('hidden');
+      document.getElementById('activeUserControls').classList.remove('hidden');
+
+      // Update Header Text
+      document.getElementById('navUserName').innerText = state.currentUser.name;
+      document.getElementById('navUserRole').innerText = 'Officer Command';
+      document.getElementById('adminNameDisplay').innerText = state.currentUser.name;
+
+      document.getElementById('headerBadge').innerText = 'OFFICER COMMAND';
+      document.getElementById('headerBadge').className = 'text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-sky-600 text-white shadow-sm';
+
+      switchAdminTab('allComplaints');
+      renderAdminComplaints('ALL');
+    }
+
+    // TABS SWITCHERS
+    function switchCitizenTab(tabId) {
+      document.querySelectorAll('.cit-view').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.cit-tab-btn').forEach(btn => {
+        btn.className = 'cit-tab-btn text-emerald-100 hover:bg-emerald-700/60 font-medium px-3.5 py-2 rounded-lg transition flex items-center space-x-1.5 whitespace-nowrap';
+      });
+
+      document.getElementById('citView-' + tabId).classList.remove('hidden');
+      document.getElementById('citTab-' + tabId).className = 'cit-tab-btn bg-white text-emerald-900 font-bold px-3.5 py-2 rounded-lg shadow-sm flex items-center space-x-1.5 whitespace-nowrap';
+    }
+
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.adm-view').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.adm-tab-btn').forEach(btn => {
+        btn.className = 'adm-tab-btn text-slate-300 hover:bg-slate-800 font-medium px-3.5 py-2 rounded-lg transition flex items-center space-x-1.5 whitespace-nowrap';
+      });
+
+      document.getElementById('admView-' + tabId).classList.remove('hidden');
+      document.getElementById('admTab-' + tabId).className = 'adm-tab-btn bg-sky-500 text-white font-bold px-3.5 py-2 rounded-lg shadow-sm flex items-center space-x-1.5 whitespace-nowrap';
+    }
+
+    // RENDER CITIZEN'S OWN COMPLAINTS ONLY
+    function renderCitizenComplaints() {
+      const container = document.getElementById('myComplaintsList');
+      container.innerHTML = '';
+
+      // STRICT FILTER: ONLY complaints submitted by current user ID
+      const userComplaints = state.complaints.filter(c => c.citizenId === state.currentUser.id);
+      document.getElementById('userComplaintCount').innerText = userComplaints.length;
+
+      if (userComplaints.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center">
+            <i class="fa-solid fa-folder-open text-slate-300 text-4xl mb-2"></i>
+            <p class="font-bold text-slate-700">No Complaints Submitted Yet</p>
+            <p class="text-xs text-slate-500 mt-1">Click on "Report Issue" to submit your first village grievance.</p>
+          </div>
+        `;
+        return;
+      }
+
+      userComplaints.forEach(item => {
+        let badgeColor = item.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800' : (item.status === 'In Progress' ? 'bg-sky-100 text-sky-800' : 'bg-amber-100 text-amber-800');
+
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hover:shadow-md transition space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="font-black text-slate-900 text-base">${item.id}</span>
+                  <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${badgeColor}">${item.status}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-tag text-slate-400 mr-1"></i>${item.category} • ${item.date}</p>
+              </div>
+              <span class="text-xs font-semibold text-slate-600 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200 self-start sm:self-auto">
+                <i class="fa-solid fa-user-shield text-slate-400 mr-1"></i>Assigned: ${item.assignedOfficer}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2 space-y-2">
+                <p class="text-xs font-bold text-slate-500 uppercase">Location</p>
+                <p class="text-xs font-semibold text-slate-800"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${item.location}</p>
+                <p class="text-xs font-bold text-slate-500 uppercase pt-2">Description</p>
+                <p class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">${item.desc}</p>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-2">Issue Photo</p>
+                <img src="${item.photo}" class="w-full h-28 object-cover rounded-xl border border-slate-200">
+              </div>
+            </div>
+
+            <!-- PROGRESS TIMELINE -->
+            <div class="pt-3 border-t border-slate-100">
+              <p class="text-[10px] font-extrabold uppercase text-slate-400 mb-2">Resolution Lifecycle Progress</p>
+              <div class="flex items-center justify-between text-xs">
+                ${item.timeline.map(t => `
+                  <div class="flex items-center space-x-1.5">
+                    <i class="fa-solid ${t.done ? 'fa-circle-check text-emerald-600' : 'fa-circle-notch text-slate-300'}"></i>
+                    <span class="${t.done ? 'font-bold text-slate-800' : 'text-slate-400'} text-[11px]">${t.title}</span>
+                  </div>
+                `).join('<div class="h-0.5 flex-grow bg-slate-200 mx-2"></div>')}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // RENDER ADMIN COMPLAINTS MASTER
+    function renderAdminComplaints(statusFilter) {
+      const container = document.getElementById('adminComplaintsContainer');
+      container.innerHTML = '';
+
+      let list = state.complaints;
+      if (statusFilter !== 'ALL') {
+        list = list.filter(c => c.status === statusFilter);
+      }
+
+      document.getElementById('adminTotalCount').innerText = state.complaints.length;
+
+      list.forEach(item => {
+        let badgeColor = item.status === 'Resolved' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : (item.status === 'In Progress' ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-amber-100 text-amber-800 border-amber-300');
+
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="font-black text-slate-900 text-base">${item.id}</span>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${badgeColor}">${item.status}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">Complainant: <strong>${item.citizenName}</strong> (${item.citizenId}) • Date: ${item.date}</p>
+              </div>
+
+              <!-- ADMIN STATUS UPDATE CONTROL -->
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-bold text-slate-600">Update Status:</span>
+                <select onchange="updateComplaintStatus('${item.id}', this.value)" class="text-xs font-bold bg-slate-100 border border-slate-300 rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-sky-500">
+                  <option value="Pending" ${item.status==='Pending'?'selected':''}>Pending</option>
+                  <option value="In Progress" ${item.status==='In Progress'?'selected':''}>In Progress</option>
+                  <option value="Resolved" ${item.status==='Resolved'?'selected':''}>Resolved</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2 space-y-2">
+                <p class="text-xs font-bold text-slate-500 uppercase">Category & Location</p>
+                <p class="text-xs font-bold text-slate-900">${item.category} — <span class="font-normal text-slate-700">${item.location}</span></p>
+                <p class="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">${item.desc}</p>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-1">Attached Citizen Evidence</p>
+                <img src="${item.photo}" class="w-full h-24 object-cover rounded-xl border border-slate-200">
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row justify-between sm:items-center text-xs text-slate-500 gap-2">
+              <span><i class="fa-solid fa-user-gear mr-1"></i> Assigned Engineer: <strong>${item.assignedOfficer}</strong></span>
+              <button onclick="alert('Verification Photo Uploaded & SLA Logged.')" class="bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold px-3 py-1.5 rounded-lg border border-sky-200 self-start sm:self-auto">
+                <i class="fa-solid fa-camera mr-1"></i> Attach Official Resolution Proof
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // UPDATE STATUS
+    function updateComplaintStatus(complaintId, newStatus) {
+      const target = state.complaints.find(c => c.id === complaintId);
+      if (target) {
+        target.status = newStatus;
+        if (newStatus === 'Resolved') {
+          target.timeline.push({ title: 'Marked Resolved by Admin', date: 'Just Now', done: true });
+        }
+        alert(`Complaint ${complaintId} status updated to: ${newStatus}`);
+        renderAdminComplaints('ALL');
+      }
+    }
+
+    // FILTER ADMIN COMPLAINTS
+    function filterAdminComplaints(val) {
+      renderAdminComplaints(val);
+    }
+
+    // SUBMIT NEW CITIZEN COMPLAINT
+    function handleCitizenComplaintSubmit(e) {
+      e.preventDefault();
+      const cat = document.getElementById('issueCategory').value;
+      const loc = document.getElementById('issueLocation').value;
+      const desc = document.getElementById('issueDesc').value;
+
+      const newId = 'CMP-2026-' + Math.floor(100 + Math.random() * 900);
+      const newObj = {
+        id: newId,
+        citizenId: state.currentUser.id,
+        citizenName: state.currentUser.name,
+        category: cat,
+        location: loc,
+        desc: desc,
+        status: 'Pending',
+        assignedOfficer: 'Unassigned (Pending BDO Review)',
+        date: '15 Oct 2026',
+        photo: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=600&q=80',
+        timeline: [
+          { title: 'Complaint Registered', date: '15 Oct 2026', done: true },
+          { title: 'Pending Officer Review', date: 'Pending', done: false }
+        ]
+      };
+
+      state.complaints.unshift(newObj);
+      alert('Complaint Submitted Successfully! Complaint ID: ' + newId);
+      
+      // Reset Form & Switch Tab
+      e.target.reset();
+      switchCitizenTab('myComplaints');
+      renderCitizenComplaints();
+    }
+
+    // GEOTAG DETECTOR SIMULATION
+    function autoGeotag() {
+      const btnText = document.getElementById('geoBtnText');
+      btnText.innerText = 'Detecting GPS...';
+      setTimeout(() => {
+        btnText.innerText = 'GPS Tagged: Lat 28.7812° N, Long 77.5021° E';
+        document.getElementById('geoBtn').className = 'w-full bg-emerald-50 text-emerald-800 text-xs font-bold p-2.5 rounded-lg border border-emerald-300 flex items-center justify-center space-x-2';
+      }, 800);
+    }
+
+    // RENDER PUBLIC FUNDS TABLE
+    function renderPublicFundsTable() {
+      const tbody = document.getElementById('publicFundsTable');
+      tbody.innerHTML = '';
+      state.vouchers.forEach(v => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-6 py-3.5 font-mono font-bold text-slate-800">${v.num}</td>
+            <td class="px-6 py-3.5 font-medium text-slate-900">${v.desc}</td>
+            <td class="px-6 py-3.5">${v.vendor}</td>
+            <td class="px-6 py-3.5 font-bold text-emerald-700">${v.amount}</td>
+            <td class="px-6 py-3.5">${v.date}</td>
+            <td class="px-6 py-3.5">
+              <button onclick="alert('Viewing Verified Treasury Voucher Scan for ${v.num}')" class="text-emerald-700 hover:text-emerald-900 font-bold underline">
+                <i class="fa-solid fa-file-pdf mr-1"></i> View Invoice PDF
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // ADD VOUCHER (ADMIN)
+    function handleAddVoucher(e) {
+      e.preventDefault();
+      const num = document.getElementById('vouchNum').value;
+      const desc = document.getElementById('vouchDesc').value;
+      const vendor = document.getElementById('vouchVendor').value;
+      const amt = '₹ ' + Number(document.getElementById('vouchAmount').value).toLocaleString('en-IN');
+
+      state.vouchers.unshift({ num, desc, vendor, amount: amt, date: '15 Oct 2026' });
+      renderPublicFundsTable();
+      closeModal('addVoucherModal');
+      alert('New Work Voucher Published to Public Ledger!');
+    }
+
+    // GRIEVANCE SUBMIT
+    function handleGrievanceSubmit(e) {
+      e.preventDefault();
+      alert('Vigilance Complaint Submitted Securely to District Anti-Corruption Cell.');
+      e.target.reset();
+      switchCitizenTab('myComplaints');
+    }
+
+    // LANGUAGE TOGGLE SIMULATOR
+    function toggleLanguage() {
+      if (state.language === 'en') {
+        state.language = 'hi';
+        document.getElementById('langText').innerText = 'हिन्दी / English';
+        document.getElementById('subHeaderTitle').innerText = 'इनोटेक स्मार्ट ग्राम शासन मंच';
+      } else {
+        state.language = 'en';
+        document.getElementById('langText').innerText = 'English / हिन्दी';
+        document.getElementById('subHeaderTitle').innerText = 'Innotech Smart Village Governance Platform';
+      }
+    }
+
+    // MODAL UTILITIES
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+  </script>
+
+</body>
+</html>
